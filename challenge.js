@@ -35,6 +35,7 @@ async function fetchWeather() {
 }
 
 async function generateWeeklySummary() {
+
     const dailyData = await fetchWeather();
     if (!dailyData) return;
 
@@ -51,20 +52,21 @@ async function generateWeeklySummary() {
         return "Sunny";
     }
 
-    console.log(
-        dailyData.time
-            .map((date, index) => {
-                const day = getWeekday(date);
-                const maxTemp = dailyData.temperature_2m_max[index];
-                const minTemp = dailyData.temperature_2m_min[index];
-                const rain = dailyData.rain_sum[index];
-                const snowfall = dailyData.snowfall_sum[index];
-                const windspeed = dailyData.windspeed_10m_max[index];
-                const condition = getWeatherCondition(rain, snowfall, windspeed);
+    const weatherList = document.getElementById('weather-list');
+    if (!weatherList) return;
 
-                return `${day}: ${Math.round(maxTemp)}°C / ${Math.round(minTemp)}°C (${condition})`;
-            })
-    );
+    weatherList.innerHTML = dailyData.time
+        .map((date, index) => {
+            const day = getWeekday(date);
+            const maxTemp = dailyData.temperature_2m_max[index];
+            const minTemp = dailyData.temperature_2m_min[index];
+            const rain = dailyData.rain_sum[index];
+            const snowfall = dailyData.snowfall_sum[index];
+            const windspeed = dailyData.windspeed_10m_max[index];
+            const condition = getWeatherCondition(rain, snowfall, windspeed);
+            return `<li><strong>${day}:</strong> ${Math.round(maxTemp)}°C / ${Math.round(minTemp)}°C <em>(${condition})</em></li>`;
+        })
+        .join('');
 }
 
 generateWeeklySummary();
